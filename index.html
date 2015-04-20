@@ -1,0 +1,181 @@
+<!--
+ Copyright 2015, Google, Inc.
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-social/4.9.0/bootstrap-social.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <!-- Firebase -->
+    <script src="https://cdn.firebase.com/js/client/2.2.4/firebase.js"></script>
+    <!-- application css/js -->
+    <link rel="stylesheet" href="css/main.css">
+    <script src="js/app.js"></script>
+</head>
+
+<body>
+    <div class="jumbotron">
+        <div class="container-flow container-narrow">
+            <div class="row title">
+                <div class="col-md-12">
+                    <h2>Speed Crowd Voting Challenge</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-7">
+                    <!-- BEGIN - voting panel -->
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Questions on the menu today ;)</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="question-container img-rounded panel panel-default">
+                                <div class="active-question" id="active-question">
+                                    There is currently no question available.
+                                </div>
+                                <!-- BEGIN - live question statistics -->
+                                <div class="question-statistics" id="question-statistics">
+                                    Average rating: <span id="question-avg">0</span> | #Votes: <span id="question-vote-count">0</span>
+                                </div>
+                                <!-- END - live question statistics -->
+                                <div class="bg-info img-rounded voting-buttons-info" id="voting-buttons-info" style="display: none;">
+                                    Please rate (higher == better):
+                                </div>
+                                <div class="voting-buttons" id="voting-buttons" style="display: none;">
+                                    <label class="radio-inline">
+                                        <input type="radio" name="votingOption" id="voting1" value="1"> 1
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="votingOption" id="voting2" value="2"> 2
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="votingOption" id="voting3" value="3"> 3
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="votingOption" id="voting4" value="4"> 4
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="votingOption" id="voting5" value="5"> 5
+                                    </label>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 id="time-left" style="display: none;">Time left to vote: 10 sec</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END - voting panel -->
+                    <!-- BEGIN - question administration panel -->
+                    <div class="panel panel-default" id="question-admin-panel">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">No question active? Fire your question! :)</h3>
+                        </div>
+                        <div class="panel-body">
+                            <form id="question-submit-form">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="question" maxlength="140" placeholder="Please enter a question for voting (max. 140 chars)">
+                                </div>
+                                <div class="bg-danger submit-error img-rounded" id="question-submit-error" style="display: none;">Did you forget to type a question before submitting?</div>
+                                <button id="question-submit" type="button" class="btn btn-default">
+                                    Submit your question for voting
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- END - question administration panel -->
+                </div>
+                <div class="col-md-5">
+                    <!-- BEGIN - how to participate panel -->
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">How to participate</h3>
+                        </div>
+                        <div class="panel-body">
+                            <ol>
+                                <li class="hidden-xs"> Scan the following QR Code to join the Speed Crowd Voting
+                                    <img id="join-url-qrcode" src="">
+                                </li>
+                                <li id="login-container" class="login-container">
+                                    Login in with one of the following options
+                                    <a id="login-button-google" class="btn btn-block btn-sm btn-social btn-google" href="javascript:void(0);">
+                                        <i class="fa fa-google"></i> <span> Sign in with Google </span>
+                                    </a>
+                                    <a id="login-button-github" class="btn btn-block btn-sm btn-social btn-github" href="javascript:void(0);">
+                                        <i class="fa fa-github"></i> <span> Sign in with GitHub </span>
+                                    </a>
+                                    <a id="login-button-twitter" class="btn btn-block btn-sm btn-social btn-twitter" href="javascript:void(0);">
+                                        <i class="fa fa-twitter"></i> <span> Sign in with Twitter </span>
+                                    </a>
+                                </li>
+                                <li>Put your vote by selecting one of the radio button when a question becomes available for voting.
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                    <!-- END - how to participate panel -->
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-7">
+                    <!-- BEGIN - #TBT(turn back time) history panel -->
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">#TBT - Nostalgia</h3>
+                        </div>
+                        <div class="panel-body">
+                            <ul class="tbt-question-history" id="tbt-question-history">
+                                <li>
+                                    <div class="question-container img-rounded panel panel-default">
+                                        <div class="tbt-question">No nostalgia so far :/</div>
+                                        <div class="tbt-question-statistics"></div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- END - #TBT(turn back time) history panel -->
+                </div>
+                <div class="col-md-5">
+                    <!-- BEGIN - voters news feed panel -->
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Voters News Flash</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div id="online-voters-count">Online voters: <span id="voters-online"></span></div>
+                            <div>
+                                <ul class="voters-feed" id="voters-feed">
+                                  <li>
+                                    <div class="question-container img-rounded panel panel-default"> No one here so far!</div>
+                                  </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END - voters news feed panel -->
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

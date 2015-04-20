@@ -1,0 +1,124 @@
+/*
+   Copyright 2015, Google, Inc.
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+       http://www.apache.org/licenses/LICENSE-2.0
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+
+canvas {
+    background-color: #000;
+    padding-left: 0;
+    padding-right: 0;
+    margin: 10px auto;
+    display: block;
+}
+
+body {
+    padding-top: 20px;
+    padding-bottom: 40px;
+    padding-left: 40px;
+    padding-right: 40px;
+}
+/* Title box */
+
+.title {
+    padding-bottom: 30px;
+}
+
+.login-container {
+    margin-bottom: 20px;
+}
+/*  Question Form, Statistics, etc */
+
+.active-question {
+    text-align: left;
+    font-weight: bold;
+    font-size: 14pt;
+}
+
+.question-container {
+    padding: 10px;
+}
+
+.question-statistics {
+    text-align: right;
+    font-size: 10pt;
+}
+
+.voting-buttons-info {
+    margin-top: 10px;
+}
+
+.panel-body ol {
+    padding-left: 20px;
+    text-align: left;
+}
+
+.tbt-question-history {
+    padding-left: 0px;
+}
+
+.tbt-question-history li {
+    list-style-type: none;
+    text-align: left;
+}
+
+.tbt-question {
+    text-align: left;
+    font-weight: bold;
+}
+
+.tbt-question-statistics {
+    text-align: right;
+}
+
+.submit-error {
+    font-weight: bold;
+    padding: 5px;
+    margin: 5px 0 10px 0;
+}
+/* Voting */
+
+.voting-buttons {
+    text-align: center;
+}
+
+.voters-feed {
+    padding-left: 0px;
+}
+
+.voters-feed li {
+    list-style-type: none;
+    text-align: left;
+    margin-bottom: 5px;
+}
+
+/* Custom container */
+
+.container-narrow {
+    margin: 0 auto;
+    max-width: 700px;
+}
+
+.container-narrow > hr {
+    margin: 30px 0;
+}
+/* Main marketing message and sign up button */
+
+.jumbotron {
+    margin: 0;
+    padding: 0;
+    background-color: #FFF;
+    text-align: center;
+}
+
+.jumbotron h1 {
+    font-size: 72px;
+    line-height: 1;
+}

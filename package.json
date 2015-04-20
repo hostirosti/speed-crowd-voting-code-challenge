@@ -1,0 +1,32 @@
+{
+    "name": "speed-crowd-voting-code-challenge",
+    "version": "0.0.1",
+    "description": "Speed Crowd Voting Code Challenge",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/hostirosti/speed-crowd-voting-code-challenge"
+    },
+    "keywords": [
+        "Firebase",
+        "Speed Crowd Voting",
+        "Code-Challenge",
+        "Speedhack"
+    ],
+    "author": "Robert Kubis <hostirosti@gmail.com> (http://twiiter.com/hostirosti)",
+    "licenses": [{
+        "type": "Apache-2.0",
+        "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }],
+    "bugs": {
+        "url": "https://github.com/hostirosti/speed-crowd-voting-code-challenge/issues"
+    },
+    "homepage": "https://github.com/hostirosti/speed-crowd-voting-code-challenge",
+    "devDependencies": {
+        "gulp": "^3.8.9",
+        "gulp-autoprefixer": "^1.0.1",
+        "gulp-connect": "^2.1.0",
+        "gulp-open": "^0.3.0",
+        "gulp-webpack": "^1.0.0",
+        "webpack": "^1.4.10"
+    }
+}
