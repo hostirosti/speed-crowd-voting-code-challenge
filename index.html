@@ -27,13 +27,20 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
   <!-- Firebase -->
   <script src="https://cdn.firebase.com/js/client/2.2.4/firebase.js"></script>
+  <!-- Handlebarsjs -->
+  <script src="//cdn.jsdelivr.net/handlebarsjs/3.0.2/handlebars.min.js"></script>
   <!-- application css/js -->
   <link rel="stylesheet" href="css/main.css">
   <script src="js/app.js"></script>
 </head>
 
 <body>
-  <a href="https://github.com/hostirosti/speed-crowd-voting-code-challenge"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
+  <a href="https://github.com/hostirosti/speed-crowd-voting-code-challenge">
+    <img class="github-fork-me-badge"
+      src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67"
+      alt="Fork me on GitHub"
+      data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png">
+  </a>
   <div class="jumbotron">
     <div class="container-flow container-narrow">
       <div class="row title">
@@ -46,18 +53,19 @@
           <!-- BEGIN - voting panel -->
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">Questions on the menu today ;)</h3>
+              <h3 class="panel-title">Question on the menu ;)</h3>
             </div>
             <div class="panel-body">
               <div class="question-container img-rounded panel panel-default">
-                <div class="active-question" id="active-question">
-                  There is currently no question available.
+                <div id="active-question-container">
+                  <script id="active-question-element-template" type="text/x-handlebars-template">
+                    <div class="active-question" id="active-question" key="{{questionKey}}">
+                      #{{questionNumber}} - {{question}}
+                      <div class="question-statistics">rating average: {{questionVotesAverage}} | #votes: {{voteCount}}
+                      </div>
+                    </div>
+                  </script>
                 </div>
-                <!-- BEGIN - live question statistics -->
-                <div class="question-statistics" id="question-statistics">
-                  Average rating: <span id="question-avg">0</span> | #Votes: <span id="question-vote-count">0</span>
-                </div>
-                <!-- END - live question statistics -->
                 <div class="bg-info img-rounded voting-buttons-info" id="voting-buttons-info" style="display: none;">
                   Please rate (higher == better):
                 </div>
@@ -79,8 +87,14 @@
                   </label>
                 </div>
               </div>
-              <div>
-                <h3 id="time-left" style="display: none;">Time left to vote: 10 sec</h3>
+              <div id="time-left-container" style="display: none;">
+                <script id="time-left-template" type="text/x-handlebars-template">
+                  {{#if isTimeLeft }}
+                    <h3 id="time-left">Time left to vote: {{timeLeft}} sec</h3>
+                  {{else}}
+                    <h3 id="time-left">Voting for this question has closed!</h3>
+                  {{/if}}
+                </script>
               </div>
             </div>
           </div>
@@ -144,12 +158,16 @@
             </div>
             <div class="panel-body">
               <ul class="tbt-question-history" id="tbt-question-history">
-                <li>
-                  <div class="question-container img-rounded panel panel-default">
-                    <div class="tbt-question">No nostalgia so far :/</div>
-                    <div class="tbt-question-statistics"></div>
-                  </div>
-                </li>
+                <script id="question-history-element-template" type="text/x-handlebars-template">
+                  <li>
+                    <div class="question-container img-rounded panel panel-default">
+                      <div class="tbt-question">#{{questionNumber}} - {{question}}</div>
+                      <div class="tbt-question-statistics">rating average: {{questionVotesAverage}} |
+                        #votes: {{voteCount}}
+                      </div>
+                    <div>
+                  </li>
+                </script>
               </ul>
             </div>
           </div>
@@ -162,12 +180,22 @@
               <h3 class="panel-title">Voters News Flash</h3>
             </div>
             <div class="panel-body">
-              <div id="online-voters-count">Online voters: <span id="voters-online">1</span></div>
+              <script id="voters-count-element-template" type="text/x-handlebars-template">
+                <div id="online-voters-count">Online voters: <span id="voters-online">{{votersCount}}</span></div>
+              </script>
               <div>
                 <ul class="voters-feed" id="voters-feed">
-                  <li>
-                    <div class="question-container img-rounded panel panel-default"> No one here so far!</div>
-                  </li>
+                  <script id="voters-feed-element-template" type="text/x-handlebars-template">
+                    <li>
+                      <div class="btn-block btn-social btn-sm btn-{{provider}} voter-feed-entry">
+                        <i class="fa fa-{{provider}}"></i>
+                        <span class="voter-profile-pic">
+                          <img src="{{pictureUrl}}">
+                        </span>
+                        {{displayName}} is now {{action}}
+                      </div>
+                    </li>
+                  </script>
                 </ul>
               </div>
             </div>

@@ -21,7 +21,7 @@ challenge at the 2015 Berlin Speedhack as part of the APIDays conference.
 ## Base Camp - Where does everyone start from?
 The application currently works single user only. It's built using Twitter Bootstrap and JQuery.
 You see 5 panel boxes:
- - *Questions on the menu today ;)* - Shows current active question or placeholder if no question is active
+ - *Question on the menu ;)* - Shows current active question or placeholder if no question is active
  - *No question active? Fire your question! :)* - Lets you submit a question that instantly becomes active. Hurry to vote :)
  - *How to participate* - Gives instructions on how to participate. This content is currently inactive since only a single user is supported.
  - *#TBT - Nostalgia* - Shows the history of previously submitted and voted questions

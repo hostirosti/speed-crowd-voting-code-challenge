@@ -18,10 +18,10 @@
  * Speed Crowd Voting Application Class
  *
  */
-var app = {
+var CrowdVoting = {
 
-  // a submitted question is active for 30 sec
-  QUESTION_ACTIVE_TIME_MS: 30000,
+  // a submitted question is active for 60 sec
+  QUESTION_ACTIVE_TIME_MS: 60000,
 
   // local sequence number - only used for single user scenario
   questionSeqNumber: 1,
@@ -33,12 +33,21 @@ var app = {
   votersNewsStreamEmpty: true,
   questionActive: false,
 
+  /* compiled Handlebarsjs Templates */
+  compiledActiveQuestionTemplate: null,
+  compiledQuestionTBTTemplate: null,
+  compiledVotersFeedTemplate: null,
+  compiledTimeLeftTemplate: null,
+
   /*
    * Initialize the application
    * add event listeners here that you want to have available after page load
    */
   init: function() {
     var self = this;
+
+    // compile handlebar templates, display initial values in panels, get QR image and display
+    this.prepareInitialDisplay();
 
     // attach vote event to radio buttons
     $('#voting-buttons input[type=radio]').change(function() {
@@ -49,6 +58,7 @@ var app = {
       var questionKey = $('#active-question').attr('key');
 
       // get reference to votes of question object
+
       var votesRef = self.questions[questionKey].votes;
 
       // push vote directly to data persistence
@@ -57,9 +67,6 @@ var app = {
       // update display by fetching the question from persistence and call processQuestion on it
       self.fetchQuestion(self, questionKey, self.processQuestion);
     });
-
-    // set QRCode image in how-to-participate box
-    $('#join-url-qrcode').attr("src", "https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=" + window.location.href);
 
     // button submit event
     $('#question-submit').click(function() {
@@ -113,6 +120,7 @@ var app = {
    *  voter = {
    *    provider: 'google|twitter|github',
    *    displayName: 'No Name',
+   *    pictureUrl: 'https://...',
    *    status: 'online|inactive'
    *  }
    */
@@ -120,7 +128,7 @@ var app = {
   // displays question in active-question-panel if not expired otherwise adds it to #tbt history
   processQuestion: function(self, questionKey, question) {
     // needed because Firebase stores scalable arrays as object lists
-    question = helper.transformQuestionVotesToArray(question);
+    question = Helper.transformQuestionVotesToArray(question);
 
     // check if question is on air (not yet expired)
     var questionVotingTimeLeft = (self.QUESTION_ACTIVE_TIME_MS -
@@ -129,17 +137,28 @@ var app = {
     if (Math.round(questionVotingTimeLeft) > 0) {
       self.questionActive = true;
       var liveQuestionKey = $('#active-question').attr('key');
-      // is the question already displayed? then only update the stats
+      // if new question: set question, show timer and reset voting buttons
       if (typeof liveQuestionKey == 'undefined' || liveQuestionKey != questionKey) {
-        $('#active-question').text("#" + question.questionNumber + " - " + $('<div/>').html(question.question).text());
-        $('#active-question').attr('key', questionKey);
-        $('#time-left').show();
+        $('#active-question-container').html(self.compiledActiveQuestionTemplate({
+          questionKey: liveQuestionKey,
+          questionNumber: question.questionNumber,
+          question: question.question,
+          questionVotesAverage: Helper.getAverageOfNumberArray(question.votes),
+          voteCount: question.votes.length
+        }));
+        $('#time-left-container').show();
         self.resetVotingRadioButtons();
       }
 
-      // calculate average rating and update Stats
-      $('#question-avg').text(helper.getAverageOfNumberArray(question.votes));
-      $('#question-vote-count').text(question.votes.length);
+      // update votes average and votes count
+      $('#active-question-container').html(self.compiledActiveQuestionTemplate({
+        questionKey: questionKey,
+        questionNumber: question.questionNumber,
+        question: question.question,
+        questionVotesAverage: Helper.getAverageOfNumberArray(question.votes),
+        voteCount: question.votes.length
+      }));
+
     } else {
       self.addToQuestionHistory(self, question);
     }
@@ -153,8 +172,7 @@ var app = {
       self.votersNewsStreamEmpty = false;
     }
 
-    $('#voters-feed').prepend('<li><div class="btn-block btn-sm btn-social btn-' + voter.provider + '">' +
-      '<i class="fa fa-' + voter.provider + '"></i>' + voter.displayName + ' is now ' + action + '</div></li>');
+    $('#voters-feed').prepend(self.compiledVotersFeedTemplate(voter));
 
     // only show the last 20 activities
     if ($('#voters-feed li').length > 20) {
@@ -178,7 +196,7 @@ var app = {
     // construct question object
     question = {
       questionNumber: -1, // sequence number is set in the persistence function
-      question: $('<div/>').text($('#question').val()).html(),
+      question: $('<div/>').text($('#question').val()).html(), //escape input
       activationTime: $.now(),
       votes: {}
     };
@@ -224,12 +242,16 @@ var app = {
       self.historyEmpty = false;
     }
 
-    $('#tbt-question-history').prepend(
-      '<li><div class="question-container img-rounded panel panel-default"><div class="tbt-question">#' +
-      question.questionNumber + " - " + question.question +
-      '</div><div class="tbt-question-statistics">Average rating: ' +
-      helper.getAverageOfNumberArray(question.votes) + " | " + "votes: " + question.votes.length +
-      '</div><div></li>');
+
+
+    var historyElementData = {
+      questionNumber: question.questionNumber,
+      question: question.question,
+      questionVotesAverage: Helper.getAverageOfNumberArray(question.votes),
+      voteCount: question.votes.length
+    };
+
+    $('#tbt-question-history').prepend(self.compiledQuestionTBTTemplate(historyElementData));
 
     // only show the last 20 questions, if new are coming in throw the old ones out
     if ($('#tbt-question-history li').length > 20) {
@@ -248,14 +270,17 @@ var app = {
           var questionVotingTimeLeft = (self.QUESTION_ACTIVE_TIME_MS -
             ($.now() - question.activationTime)) / 1000;
 
+          // refresh timer display - uses handlebarsjs template
+          $('#time-left-container').html(self.compiledTimeLeftTemplate({
+            isTimeLeft: Math.round(questionVotingTimeLeft) > 0,
+            timeLeft: Math.round(questionVotingTimeLeft)
+          }));
+
+          // if question expired, move to history and disable voting buttons
           if (Math.round(questionVotingTimeLeft) <= 0) {
-            $('#time-left').text("Voting for this question has closed!");
             $('#voting-buttons input[type=radio]').attr("disabled", true);
             self.processQuestion(self, questionkey, question);
             self.questionActive = false;
-          } else {
-            // Update remaining time to vote
-            $('#time-left').text("Time left to vote: " + Math.round(questionVotingTimeLeft) + " sec");
           }
 
           // show/hide | enable/disable question admin panel
@@ -264,15 +289,49 @@ var app = {
       });
     }
   },
+
+  prepareInitialDisplay: function() {
+    /* Compile Handlebarsjs templates */
+    this.compiledActiveQuestionTemplate = Handlebars.compile($("#active-question-element-template").html());
+    this.compiledQuestionTBTTemplate = Handlebars.compile($("#question-history-element-template").html());
+    this.compiledVotersFeedTemplate = Handlebars.compile($("#voters-feed-element-template").html());
+    this.compiledTimeLeftTemplate = Handlebars.compile($("#time-left-template").html());
+
+    // add placeholder element to active question panel
+    $('#active-question-container').html(this.compiledActiveQuestionTemplate({
+      questionNumber: '',
+      question: 'We\'re all waiting for you to submit a question! :)',
+      questionVotesAverage: '0',
+      voteCount: '0'
+    }));
+
+    // add placeholder element to history panel
+    $('#tbt-question-history').prepend(this.compiledQuestionTBTTemplate({
+      questionNumber: '',
+      question: 'Feels preety empty here! Are we in space?',
+      questionVotesAverage: '0',
+      voteCount: '0'
+    }));
+
+    // add placeholder element to voters feed and set voter count to 1
+    $('#voters-feed').prepend(this.compiledVotersFeedTemplate({
+      provider: 'google',
+      displayName: 'Doctor Who',
+      pictureUrl: 'http://t0.gstatic.com/images?q=tbn:ANd9GcTJVQ_AdlKA4ardx6wCKT58HmZF9zSJUydkXCqbpgl0-eUYPQuerZUzdwI',
+      action: 'in space'
+    }));
+
+    // set QRCode image in how-to-participate box
+    $('#join-url-qrcode').attr("src", "https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=" + window.location.href);
+  }
 };
 
 
 /*
  * Helper Class
  *
- *
  */
-var helper = {
+var Helper = {
   getAverageOfNumberArray: function(array) {
     if (typeof array !== 'undefined') {
       return array.length > 0 ? (array.reduce(function(a, b) {
@@ -303,9 +362,10 @@ var helper = {
  *
  */
 $(document).ready(function() {
-  app.init();
-  // set refresh interval used to update question timer display
+  CrowdVoting.init();
+
+  // setup refresh interval for our question timer display update
   setInterval(function() {
-    app.refreshDisplay();
+    CrowdVoting.refreshDisplay();
   }, 500);
 });
