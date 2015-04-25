@@ -165,7 +165,7 @@ var CrowdVoting = {
   },
 
   // add voter activity to voters news stream - not used in single user scenario
-  addToVotersNewsStream: function(self, voter, action) {
+  addToVotersNewsStream: function(self, voter) {
     // remove placeholder entry
     if (self.votersNewsStreamEmpty) {
       $('#voters-feed li:last').remove();
@@ -318,7 +318,7 @@ var CrowdVoting = {
       provider: 'google',
       displayName: 'Doctor Who',
       pictureUrl: 'http://t0.gstatic.com/images?q=tbn:ANd9GcTJVQ_AdlKA4ardx6wCKT58HmZF9zSJUydkXCqbpgl0-eUYPQuerZUzdwI',
-      action: 'in space'
+      status: 'in space'
     }));
 
     // set QRCode image in how-to-participate box
