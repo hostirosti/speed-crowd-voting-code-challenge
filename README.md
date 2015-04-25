@@ -30,10 +30,10 @@ You see 5 panel boxes:
 ## The Challenge - Can you solve it?
 Use [Firebase APIs](https://www.firebase.com/how-it-works.html) to finish the following steps:
  1. Replace the local data structure ```question: {}``` and store questions and votes in Firebase. Enable real-time synchronization and updates between all clients.
- 2. Integrate an [authentication provider](https://www.firebase.com/docs/web/guide/user-auth.html#section-providers) of your choice (or all if you like and can spare the time)and show who came online, went inactive or offline in the *Voters News Flash*. Show the question submit panel only to authenticated users.
+ 2. Integrate an [authentication provider](https://www.firebase.com/docs/web/guide/user-auth.html#section-providers) of your choice (or all if you like and can spare the time) and show who came online, went inactive or offline in the *Voters News Flash*. Show the question submit panel only to authenticated users.
  3. Configure [security & permissions](https://www.firebase.com/docs/web/guide/understanding-security.html#section-authorization) to secure your Firebase and only authenticated users can write data.
 
-To get started checkout the [Firebase Guide](https://www.firebase.com/docs/web/guide/).
+To get started checkout the [Firebase Guide](https://www.firebase.com/docs/web/guide/). For any question feel free to contact us on Twitter ([@hostirosti](https://twitter.com/hostirosti) and [@tekgrrl](https://twitter.com/tekgrrl)).
 
 Optional: Unlock bonus points by ensuring that data privacy and anonymity concerns are met. How do you solve that a voting can't be backtracked to its voter still enforcing that everyone can only vote once for each question.
 
