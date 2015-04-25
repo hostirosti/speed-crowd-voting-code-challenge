@@ -24,7 +24,7 @@ var webpack         = require('gulp-webpack');
 *  reload html
 */
 
-gulp.task("html", function() {
+gulp.task("reload", function() {
   var stream = gulp.src('*.html')
     .pipe(connect.reload());
 
@@ -45,13 +45,18 @@ gulp.task('connect', function() {
   });
 });
 
+gulp.task('watch', function () {
+  gulp.watch(['./js/*.js'], ['reload']);
+  gulp.watch(['./*.html'], ['reload']);
+  gulp.watch(['./css/*.css'], ['reload']);
+});
 
 /**
 *  BUILD TASKS
 *
 *  Local and production build tasks
 */
-gulp.task('default', ['connect'], function() {
+gulp.task('default', ['watch', 'connect'], function() {
   //Now open in browser
   var stream = gulp.src("index.html")
       .pipe(openPage("", {
